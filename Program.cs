@@ -16,7 +16,7 @@
             int fightNumber = 1;
             while (fightNumber <= 3)
             {
-                
+
                 bool menu = true;
                 while (menu)
                 {
@@ -34,11 +34,11 @@
                     }
                     else if (choice == "2")
                     {
-                        menu = false; 
+                        menu = false;
                     }
                     else if (choice == "3")
                     {
-                        return; 
+                        return;
                     }
                     else
                     {
@@ -46,23 +46,41 @@
                     }
                 }
 
-                
+
                 Enemy enemy;
                 if (fightNumber == 1) enemy = new Enemy("Волк", 15, 5);
                 else if (fightNumber == 2) enemy = new Enemy("Гоблин", 20, 7);
                 else enemy = new Enemy("Тролль", 25, 10);
 
-               
+
                 bool won = battle.Fight(player, enemy);
 
-                if (!player.IsAlive) { Console.WriteLine("Вы погибли..."); return; }
-                if (!won) { Console.WriteLine("Вы сбежали..."); return; }
+                if (!player.IsAlive)
+                {
+                    Console.WriteLine("Вы погибли...");
+
+                    Console.WriteLine("Нажмите на любую клавишу...");
+                    Console.ReadLine();
+
+                    return;
+                }
+                if (!won)
+                {
+                    Console.WriteLine("Вы сбежали...");
+                    Console.WriteLine("Нажмите на любую клавишу...");
+                    Console.ReadLine();
+                    return;
+                }
 
                 fightNumber++;
             }
 
-            Console.WriteLine("\n=== ВЫ ПОБЕДИЛИ ВСЕХ! ===");
+            Console.WriteLine("\n=== ВЫ ПРОШЛИ ВСЕХ ПРОТИВНИКОВ! ===");
             Console.ReadLine();
+
+            Console.WriteLine("Нажмите на любую клавишу...");
+            Console.ReadLine();
+
         }
     }
 }
