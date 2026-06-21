@@ -4,34 +4,14 @@ using System.Text;
 
 namespace SimpleRPG
 {
-    internal class Enemy
+    internal class Enemy : Character
     {
-        public string Name;
-        public int HP;
-        public int MaxHP;
-        
-        public int Defense;
+        public int Exp { get; set; } 
 
-        public Enemy(string name, int hp,  int defense)
+        public Enemy(string name, int hp, int defense, int exp)
+            : base(name, hp, defense)
         {
-            Name = name;
-            HP = hp;
-            MaxHP = hp;
-            
-            Defense = defense;
-        }
-        public bool IsAlive
-        {
-            get { return HP > 0; }
-        }
-        public void TakeDamage(int Damage)
-        {
-            HP = HP - Damage;
-            if (HP <= 0)
-            {
-                HP = 0;
-            }
-
+            Exp = exp;
         }
     }
 }
