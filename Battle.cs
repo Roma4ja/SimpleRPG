@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SimpleRPG
+﻿namespace SimpleRPG
 {
     internal class Battle
     {
-        public  bool Fight(Player player, Enemy enemy)
-        {
-            
-            Console.WriteLine("========= Бой =========");
-            
-            Console.WriteLine($"{player.Name} VS {enemy.Name}");
+        private Random rand = new Random(); 
 
-            int initiative_Player = new Random().Next(1, 20);
-            int initiative_Enemy = new Random().Next(1, 20);
+        public bool Fight(ICombatant player, ICombatant enemy)
+        {
+            Console.WriteLine("========= Бой =========");
+            Console.WriteLine($"{player.Name} VS {enemy.Name}");
+            
+            int initiative_Player = rand.Next(1, 20);
+            int initiative_Enemy = rand.Next(1, 20);
             Console.WriteLine($"Бросок инициативы! \n Вам выпало: {initiative_Player} \n Противнику выпало: {initiative_Enemy}");
 
             if (initiative_Player >= initiative_Enemy)
@@ -24,21 +20,16 @@ namespace SimpleRPG
             else
             {
                 Console.WriteLine("Противник ходит первым!");
-                int Hit_Enemy = new Random().Next(1, 20);
+                int Hit_Enemy = rand.Next(1, 20);
                 if (Hit_Enemy >= player.Defense)
                 {
-                    Console.WriteLine($"Противник попадает своей атакой! {Hit_Enemy}/{player.Defense}");
-                    int Enemy_choice = 1;
-                    if (Enemy_choice == 1)
+                    int Attack_damage = rand.Next(1, 10);
+                    player.TakeDamage(Attack_damage);
+                    Console.WriteLine($"{enemy.Name} атакует! \n {enemy.Name} наносит {Attack_damage} урона! \n У вас {player.HP}/{player.MaxHP} HP!");
+                    if (!player.IsAlive)
                     {
-                        int Attack_damage = new Random().Next(1, 10);
-                        player.TakeDamage(Attack_damage);
-                        Console.WriteLine($"{enemy.Name} атакует! \n {enemy.Name} наносит {Attack_damage} урона! \n У вас {player.HP}/{player.MaxHP} HP!");
-                        if (!player.IsAlive)
-                        {
-                            Console.WriteLine("Вы погибли...");
-                            return false;
-                        }
+                        Console.WriteLine("Вы погибли...");
+                        return false;
                     }
                 }
                 else
@@ -47,7 +38,6 @@ namespace SimpleRPG
                 }
             }
 
-            // === ОСНОВНОЙ ЦИКЛ БОЯ ===
             while (player.IsAlive && enemy.IsAlive)
             {
                 Console.WriteLine("Что вы будете делать?");
@@ -55,53 +45,54 @@ namespace SimpleRPG
                 Console.WriteLine("2. Лечиться");
                 Console.WriteLine("3. Сбежать");
 
-                int choice = Int32.Parse(Console.ReadLine());
+                
+                if (!int.TryParse(Console.ReadLine(), out int choice))
+                {
+                    Console.WriteLine("Введите число!");
+                    continue;
+                }
 
                 switch (choice)
                 {
                     case 1:
-                        int Hit_Player = new Random().Next(1, 20);
-                        Console.WriteLine($"Вы наносите удар! {Hit_Player}/20 ");
+                        int attackBonus = (player is Player p) ? p.AttackBonus : 0;
+                        int damageBonus = (player is Player p2) ? p2.DamageBonus : 0;
+
+                        int Hit_Player = rand.Next(1, 20) + attackBonus;
+                        Console.WriteLine($"Вы наносите удар! {Hit_Player}/20");
                         if (Hit_Player >= enemy.Defense)
                         {
-                            int Attack_damage = new Random().Next(1, 10);
+                            int Attack_damage = rand.Next(1, 10) + damageBonus;
                             enemy.TakeDamage(Attack_damage);
-                            Console.WriteLine($"Вы попадаете! Вы нанесли {Attack_damage} урона! У {enemy.Name} {enemy.HP}/{enemy.MaxHP} HP");
-                            
+                            Console.WriteLine($"Вы попадаете! Вы нанесли {Attack_damage} урона!");
                         }
                         else
                         {
-                            Console.WriteLine($"Вы промахнулись! ");
+                            Console.WriteLine("Вы промахнулись!");
                         }
                         break;
+
                     case 2:
-                        int healing = new Random().Next(1, 10);
-                        player.HP = player.HP + healing;
-                        if (player.HP > player.MaxHP)
-                        {
-                            player.HP = player.MaxHP;
-                            
-                            
-                        }
+                        int healing = rand.Next(1, 10);
+                        player.HP += healing; 
                         Console.WriteLine($"Вы вылечились на {healing} HP \n У вас {player.HP}/{player.MaxHP} HP!");
                         break;
 
                     case 3:
                         Console.WriteLine("Вы сбежали!");
-
                         return false;
+
                     default:
                         Console.WriteLine("Нет такого выбора!");
                         break;
                 }
 
-                // Если враг жив — он атакует
                 if (enemy.IsAlive)
                 {
-                    int Hit_Enemy = new Random().Next(1, 20);
+                    int Hit_Enemy = rand.Next(1, 20);
                     if (Hit_Enemy >= player.Defense)
                     {
-                        int Attack_damage = new Random().Next(1, 10);
+                        int Attack_damage = rand.Next(1, 10);
                         player.TakeDamage(Attack_damage);
                         Console.WriteLine($"{enemy.Name} атакует! Наносит {Attack_damage} урона! У вас {player.HP}/{player.MaxHP} HP!");
                         if (!player.IsAlive)
@@ -125,8 +116,5 @@ namespace SimpleRPG
 
             return false;
         }
-
-
-
     }
 }
